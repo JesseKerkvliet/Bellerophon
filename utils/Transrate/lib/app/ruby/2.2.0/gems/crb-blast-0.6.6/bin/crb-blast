@@ -1,0 +1,75 @@
+#!/usr/bin/env ruby
+
+#
+# run crb-blast from the cli
+#
+
+require 'trollop'
+require 'crb-blast'
+require 'bindeps'
+
+opts = Trollop::options do
+  version CRB_Blast::VERSION::STRING.dup
+  banner <<-EOS
+
+CRB-Blast v#{CRB_Blast::VERSION::STRING.dup} by Chris Boursnell <cmb211@cam.ac.uk>
+
+Conditional Reciprocal Best BLAST
+
+USAGE:
+crb-blast <options>
+
+OPTIONS:
+
+EOS
+  opt :query,
+      "query fasta file",
+      :required => true,
+      :type => String
+
+  opt :target,
+      "target fasta file",
+      :required => true,
+      :type => String
+
+  opt :evalue,
+      "e-value cut off for BLAST. Format 1e-5",
+      :default => 1e-5,
+      :type => :float
+
+  opt :threads,
+      "number of threads to run BLAST with",
+      :default => 1,
+      :type => :int
+
+  opt :output,
+      "output file as tsv",
+      :required => true,
+      :type => String
+
+  opt :split,
+      "split the fasta files into chunks and run multiple blast jobs and then"+
+      " combine them."
+end
+
+Trollop::die :query, "must exist" if !File.exist?(opts[:query])
+Trollop::die :target, "must exist" if !File.exist?(opts[:target])
+
+gem_dir = Gem.loaded_specs['crb-blast'].full_gem_path
+gem_deps = File.join(gem_dir, 'deps', 'deps.yaml')
+Bindeps.require gem_deps
+
+blaster = CRB_Blast::CRB_Blast.new(opts.query, opts.target)
+dbs = blaster.makedb
+run = blaster.run_blast(opts.evalue, opts.threads, opts.split)
+load = blaster.load_outputs
+recips = blaster.find_reciprocals
+secondaries = blaster.find_secondaries
+
+File.open("#{opts.output}", 'w') do |out|
+  blaster.reciprocals.each_pair do |query_id, hits|
+    hits.each do |hit|
+      out.write "#{hit}\n"
+    end
+  end
+end

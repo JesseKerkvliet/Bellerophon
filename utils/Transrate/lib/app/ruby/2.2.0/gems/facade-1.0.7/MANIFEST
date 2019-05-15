@@ -1,0 +1,8 @@
+* CHANGES
+* MANIFEST
+* README
+* Rakefile
+* facade.gemspec
+* certs/djberg96_pub.pem
+* lib/facade.rb
+* test/test_facade.rb

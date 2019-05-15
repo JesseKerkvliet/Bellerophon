@@ -1,0 +1,23 @@
+#!/usr/bin/env ruby
+require 'transrate'
+include Transrate
+
+# We want clean error messages through the logger, no ugly backtraces
+# because the user doesn't care about them, unless they specifically ask for
+# them with --loglevel debug
+module Kernel
+  alias _raise raise
+
+  def raise(*a)
+    begin
+      _raise(*a)
+    rescue TransrateError => e
+      logger.error e.message
+      logger.debug e.backtrace unless e.backtrace.nil?
+      exit 1
+    end
+  end
+end
+
+cmdline = Cmdline.new ARGV
+cmdline.run
