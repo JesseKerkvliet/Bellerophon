@@ -1,2 +1,0 @@
-# Bellerophon
-Chimera removal pipeline

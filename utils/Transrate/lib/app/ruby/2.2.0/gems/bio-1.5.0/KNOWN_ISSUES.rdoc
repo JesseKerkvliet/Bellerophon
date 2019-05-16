@@ -1,0 +1,190 @@
+= KNOWN_ISSUES.rdoc - Known issues and bugs in BioRuby
+Copyright:: Copyright (C) 2009-2012 Naohisa Goto <ng@bioruby.org>
+License::   The Ruby License
+
+= Known issues and bugs in BioRuby
+
+Below are known issues and bugs in BioRuby. Patches to fix them are welcome.
+We hope they will be fixed in the future.
+
+Items marked with (WONT_FIX) tags would not be fixed within BioRuby because
+they are not BioRuby's issues and/or it is very difficult to fix them.
+
+== 1. Ruby version specific issues
+
+=== Ruby 1.9.1 or later
+
+Some classes/modules/methods still may not work or may return incorrect
+results in Ruby 1.9.X, especially those not covered by the unit tests.
+
+==== String encodings
+
+Currently, BioRuby do not care string encodings. In some cases,
+Encoding::CompatibilityError or "ArgumentError: invalid byte sequence in
+(encoding name)" may be raised.
+
+=== End-of-life Ruby versions
+
+==== Ruby 1.9.0
+
+(WONT_FIX) Ruby 1.9.0 is NOT supported because it isn't a stable release.
+Use Ruby 1.9.1 or later.
+
+==== Ruby 1.8.6 or earlier
+
+(WONT_FIX) Problems observed only with Ruby 1.8.6 or earlier will not be
+fixed. Note that Ruby 1.8.6 or earlier is no longer supported, as described
+in README.rdoc.
+
+==== Ruby 1.8.2 or earlier
+
+(WONT_FIX) In some cases, temporary files and directories may not be
+removed because of the lack of FileUtils.remove_entry_secure.
+
+=== Problem with REXML DoS vulnerability patch before 09-Nov-2008
+
+(WONT_FIX) If you have applied a patch taken from
+http://www.ruby-lang.org/en/news/2008/08/23/dos-vulnerability-in-rexml/
+before 09 Nov 2008 12:40 +0900, because of the bug in the patch,
+parsing of Blast XML results with REXML parser may fail. The bug is already
+fixed and new patch is available on the above URL. Note that some Linux
+distributions would have incorporated the patch in their manners, and may
+have the same problem.
+
+=== RubyGems 0.8.11 or earlier
+
+(WONT_FIX) With very old version of RubyGems, use 'require_gem' which was
+deprecated in RubyGems 0.9.0 and removed in RubyGems 1.0.1.
+
+  #!/usr/bin/env ruby
+  require 'rubygems'
+  require_gem 'bio'
+
+=== JRuby
+
+On JRuby, errors may be raised due to the following unfixed bugs in JRuby.
+
+* {JRUBY-6195}[http://jira.codehaus.org/browse/JRUBY-6195] Process.spawn
+  (and related methods) ignore option hash
+* {JRUBY-6818}[http://jira.codehaus.org/browse/JRUBY-6818] Kernel.exec,
+  Process.spawn (and IO.popen etc.) raise error when program is an array
+  containing two strings
+
+(WONT_FIX) With older version of JRuby, you may be bothered by the following
+bugs that have already been fixed in the head of JRuby.
+
+* {JRUBY-6658}[http://jira.codehaus.org/browse/JRUBY-6658] Problem when
+  setting up an autoload entry, defining a class via require, then redefining
+  the autoload entry
+* {JRUBY-6666}[http://jira.codehaus.org/browse/JRUBY-6666] Open3.popen3
+  failing due to missing handling for [path, argv[0]] array
+* {JRUBY-6819}[http://jira.codehaus.org/browse/JRUBY-6819]
+  java.lang.ArrayIndexOutOfBoundsException in String#each_line
+
+(WONT_FIX) Due to JRUBY-5678 (resolved issue) and the difference of behavior
+between CRuby and JRuby written in the comments of the issue tracking page,
+when running BioRuby on JRuby with sudo or root rights, TMPDIR environment
+variable should be set to a directory that is not world-writable. Currently,
+the workaround is needed for running BioRuby tests with JRuby on Travis-CI.
+
+* {JRUBY-5678}[http://jira.codehaus.org/browse/JRUBY-5678] tmpdir cannot
+  be delete when jruby has sudo/root rights
+
+=== Rubinius
+
+According to Travis-CI, unit tests have failed on 1.9 mode of Rubinius.
+
+(WONT_FIX) With older version of Rubinius, you may be bothered by the
+following bugs that have already been fixed in the head of Rubinius.
+
+* {Rubinius Issue #1693}[https://github.com/rubinius/rubinius/issues/1693]
+  String#split gives incorrect output when splitting by /^/
+* {Rubinius Issue #1724}[https://github.com/rubinius/rubinius/issues/1724]
+  Creating Struct class with length attribute
+
+== 2. OS and/or architecture-dependent issues
+
+=== Microsoft Windows
+
+==== Text mode issues
+
+Following 4 tests failed on mswin32 (and maybe on mingw32 and bccwin32)
+because of the conversion of line feed codes in the text mode.
+
+* test_ended_pos and test_start_pos in test/unit/bio/io/test_flatfile.rb
+* test_pos in test/unit/bio/io/flatfile/test_buffer.rb
+* test_entry_pos in test/unit/bio/appl/blast/test_rpsblast.rb
+
+This indicates that br_bioflat.rb and Bio::FlatFileIndex may create
+incorrect indexes on mswin32, mingw32, and bccwin32. In addition,
+Bio::FlatFile may return incorrect data.
+
+==== String escaping of command-line arguments
+
+After BioRuby 1.4.1, in Ruby 1.9.X running on Windows, escaping of
+command-line arguments are processed by the Ruby interpreter. Before BioRuby
+1.4.0, the escaping is executed in Bio::Command#escape_shell_windows, and
+the behavior is different from the Ruby interpreter's one.
+
+Curreltly, due to the change, test/functional/bio/test_command.rb may fail
+on Windows with Ruby 1.9.X.
+
+==== Windows 95/98/98SE/ME
+
+(WONT_FIX) Some methods that call external programs may not work in
+Windows 95/98/98SE/ME because of the limitation of COMMAND.COM.
+
+=== OpenVMS, BeOS, OS/2, djgpp, Windows CE
+
+(WONT_FIX) BioRuby may not work on these platforms.
+
+== 3. Known issues and bugs in BioRuby
+
+=== Bio::UniProtKB
+
+Bio::UniProtKB should be updated to follow UniProtKB format changes described
+in http://www.uniprot.org/docs/sp_news.htm .
+
+=== Bio::PDB
+
+Bio::PDB should be updated to follow PDB format version 3.3.
+
+=== Bio::Blast::Report
+
+NCBI announces that that they are makeing a new version of BLAST XML data
+format. BioRuby should support it.
+
+=== Bio::Blast::Default::Report
+
+Bio::Blast::Default::Report currently supports legacy BLAST only.
+It may be better to support BLAST+ text output format, although NCBI
+do not recommend to do so because the format is unstable.
+
+== 4. Compatibility issues with other libraries/extensions
+
+=== ActiveRecord
+
+BioSQL support uses ActiveRecord, but the author of the document does not
+know which version is suitable.
+
+=== Ruby on Rails
+
+BioRuby Shell on Web uses Ruby on Rails, but the author of the document does
+not know which version is suitable.
+
+== 5. Historical descriptions
+
+=== CVS
+
+For historical purposes: the anonymous CVS was provided at 
+
+* http://cvs.bioruby.org/
+
+and could be obtained by the following procedure.
+
+  % cvs -d :pserver:cvs@code.open-bio.org:/home/repository/bioruby login
+  CVS password: cvs (login with a password 'cvs' for the first time)
+  % cvs -d :pserver:cvs@code.open-bio.org:/home/repository/bioruby co bioruby
+
+These may be closed without any prior notice.
+
