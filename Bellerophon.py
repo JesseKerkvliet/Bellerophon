@@ -55,7 +55,7 @@ def determineAssemblies(args):
 	This will be re-enabled during a later update.
 	"""
 
-	basename = args.assembly.split(".fa")[0]
+	basename = args.assembly.split(".fa")[0].split("/")[-1]
 	tpm_name = args.assembly
 	cdhit_name = "{}_postTPM.fasta".format(basename)
 	transrate_name = "{}_postCDHIT.fasta".format(basename)
