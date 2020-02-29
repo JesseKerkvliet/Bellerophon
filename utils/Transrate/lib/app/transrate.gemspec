@@ -25,7 +25,7 @@ Gem::Specification.new do |gem|
   gem.add_dependency 'colorize', '~> 0.7', '>= 0.7.7'
 
   gem.add_development_dependency 'test-unit', '~> 3.0'
-  gem.add_development_dependency 'rake', '~> 10.3', '>= 10.3.2'
+  gem.add_development_dependency 'rake', '>= 10.3.2', '~> 13.0'
   gem.add_development_dependency 'rake-compiler', '~> 0.9', '>= 0.9.2'
   gem.add_development_dependency 'minitest', '~> 5'
   gem.add_development_dependency 'minitest-reporters', '~> 1', '>= 1.0.17'
