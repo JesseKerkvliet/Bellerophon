@@ -2,7 +2,7 @@ snap:
   binaries:
     - snap-aligner
   version:
-    number: '1.0dev.96'
+    number: '1.0dev.97'
     command: 'snap-aligner'
   url:
     64bit:
