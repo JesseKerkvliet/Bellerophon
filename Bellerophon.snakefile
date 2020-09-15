@@ -61,7 +61,7 @@ rule CDHIT:
 		output="{}/{}_postCDHIT.fasta".format(config["outdir"], config["basename"])
 	shell:
 		"""
-		cdhit-est -i {input.assembly} -o {output.output} -c {params.cutoff} -T {threads}
+		cd-hit-est -i {input.assembly} -o {output.output} -c {params.cutoff} -T {threads}
 		"""
 
 # Rule ORF runs the ORF length filter
@@ -106,6 +106,7 @@ rule AllTransrates:
 		outdir=config["outdir"],
 		basename=config["basename"]
 	threads: config["threads"]
+	conda: "envs/transrate.yaml"
 	output:
 		"{}/{}_BEL.fasta".format(config["outdir"],config["basename"])
 	shell:
@@ -113,6 +114,9 @@ rule AllTransrates:
 		{params.workspace}/utils/Transrate/transrate --assembly {input.clean} --left {input.left} --right {input.right} --output {params.outdir}/TRun_clean --threads {threads}
 		{params.workspace}/utils/Transrate/transrate --assembly {input.TPM} --left {input.left} --right {input.right} --output {params.outdir}/TRun_TPM --threads {threads} 
 		{params.workspace}/utils/Transrate/transrate --assembly {input.CDHIT} --left {input.left} --right {input.right} --output {params.outdir}/TRun_CDHIT --threads {threads}
+		#transrate --assembly {input.clean} --left {input.left} --right {input.right} --output {params.outdir}/TRun_clean --threads {threads}
+		#transrate --assembly {input.TPM} --left {input.left} --right {input.right} --output {params.outdir}/TRun_TPM --threads {threads} 
+		#transrate --assembly {input.CDHIT} --left {input.left} --right {input.right} --output {params.outdir}/TRun_CDHIT --threads {threads}
 		# If ORF filtering is disabled, TransRate won't be called on that output file
 		if [ {input.clean} != {input.ORF} ]; then
 		{params.workspace}/utils/Transrate/transrate --assembly {input.ORF} --left {input.left} --right {input.right} --output {params.outdir}/TRun_ORF  --threads {threads}

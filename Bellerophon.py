@@ -112,7 +112,7 @@ def main():
 	configfile.write(config)
 	configfile.close()
 
-	subprocess.call(["snakemake","--snakefile","Bellerophon.snakefile"])
+	subprocess.call(["snakemake","--snakefile","Bellerophon.snakefile","--use-conda"])
 
 
 if __name__ == "__main__":

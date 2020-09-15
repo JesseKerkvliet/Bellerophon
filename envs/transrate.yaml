@@ -1,0 +1,10 @@
+channels:
+    - bioconda
+    - conda-forge
+    - anaconda
+dependencies:
+    - transrate-tools
+    - salmon=0.6
+    - boost=1.60.0
+    - snap-aligner=1.0dev.97
+
